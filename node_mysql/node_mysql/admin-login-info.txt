@@ -1,0 +1,55 @@
+{
+    "name": "Ana Oliveira",
+    "email": "ana@example.com",
+    "password": "oliveira123",
+    "phone": "+55 (31) 98765-4321",
+    "CEP": "30000-000",
+    "state": "Minas Gerais",
+    "city": "Belo Horizonte",
+    "street": "Rua dos Ipês",
+    "dwellingNumber": 456
+  },
+  {
+    "name": "Rafaela Santos",
+    "email": "rafaela@example.com",
+    "password": "santos456",
+    "phone": "+55 (21) 98765-4321",
+    "CEP": "22000-000",
+    "state": "Rio de Janeiro",
+    "city": "Rio de Janeiro",
+    "street": "Avenida Copacabana",
+    "dwellingNumber": 789
+  },
+  {
+    "name": "Pedro Souza",
+    "email": "pedro@example.com",
+    "password": "souza123",
+    "phone": "+55 (47) 98765-4321",
+    "CEP": "89000-000",
+    "state": "Santa Catarina",
+    "city": "Florianópolis",
+    "street": "Rua das Palmeiras",
+    "dwellingNumber": 101
+  },
+  {
+    "name": "Camila Lima",
+    "email": "camila@example.com",
+    "password": "lima456",
+    "phone": "+55 (85) 98765-4321",
+    "CEP": "60000-000",
+    "state": "Ceará",
+    "city": "Fortaleza",
+    "street": "Avenida Beira Mar",
+    "dwellingNumber": 222
+  },
+  {
+    "name": "Lucas Oliveira",
+    "email": "lucas@example.com",
+    "password": "oliveira789",
+    "phone": "+55 (62) 98765-4321",
+    "CEP": "74000-000",
+    "state": "Goiás",
+    "city": "Goiânia",
+    "street": "Rua das Mangueiras",
+    "dwellingNumber": 333
+  }
