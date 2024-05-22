@@ -1,154 +1,209 @@
 import express from "express";
 import User from "./models/User.js";
-import bcrypt, { hash } from 'bcrypt'
-import validarToken from "./middleware/auth.js";
+import bcrypt from 'bcrypt';
+import validarToken from "./middlewares/auth.js";
+import 'dotenv/config'
 import jwt from "jsonwebtoken";
-import 'dotenv/config' 
-import cors from 'cors';
+import cors from "cors";
+
 
 const app = express()
-
 app.use(express.json())
 
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
 
-    res.header("Access-Control-Allow-Origin", "*")/* Qualquer rota pode ter acesso nomento, mas queado fizermos
-    o deply iremos especifixar as rotas que poderão ter acesso*/
-    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE")
-    res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization")
-    app.use(cors())
-    next()
-}) 
+  res.header("Access-Control-Allow-Origin", "*")// qualquer rota pode ter acesso no momento,mas quando fizermos o deploy iremos especificar as rotas que poderão ter acesso
+  res.header("Access-Control-Allow-Credentials", "GET", "POST", "PUT", "DELETE") //definindo metodos de acesso
+  res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization") //permitindo acesso aos conteudos
+  app.use(cors())
+  next()
+})
 
-// #getAll
-app.get('/users', async (req, res) => {
-    await User.findAll().then((users) => {
-        return res.json({
-            error: false,
-            users
-        })
+//pegando o nome e email do usuario que será passado para a tela de login
+app.get('/users',  async (req, res) => {
+
+  await User.findAll()
+    .then((users) => {
+
+      return res.json({
+        error: false,
+        users
+      })
+
     }).catch(() => {
-        return res.json({
-            error: true,
-            mensagem: "Doesn't is posible get all"
-        })
+
+      return res.json({
+        error: true,
+        mensagem: "não conseguiu listar "
+
+      })
     })
 })
 
-// #getById
-app.get('/users/:id', async (req, res) => {
-    const { id } = req.params
-    await User.findOne({ where: { id: id } }).then((users) => {
-        return res.json({
-            error: false,
-            users
-        })
+
+//puxando pelo id
+app.get('/users/:id',  async (req, res) => {
+  const { id } = req.params
+
+  await User.findOne({ where: { id: id } })
+    .then((users) => {
+
+      return res.json({
+        error: false,
+        users
+      })
+
     }).catch(() => {
-        return res.json({
-            erro: true,
-            mensagem: "Doesn't is posible get all"
-        })
+
+      return res.json({
+        error: true,
+        mensagem: "não conseguiu listar "
+
+      })
     })
 })
 
-// #post
-app.post('/users', async (req, res) => {
-    // const { name, email } = req.body
-    var dados = req.body
+//cadastra um usuario
+app.post('/users',  async (req, res) => {
 
-    dados.password = await bcrypt.hash(dados.password, 8)
+  var dados = req.body
 
-    await User.create(dados).then(() => {
-        return res.json({
-            error: false,
-            mensagem: "Usuario cadastrado"
-        })
-    }).catch(() => {
-        return res.json({
-            error: true,
-            mensagem: "Usuario não cadastrado"
-        })
+  dados.password = await bcrypt.hash(dados.password, 8)
+
+  await User.create(dados).then(() => {
+
+    return res.json({
+      error: false,
+      mensagem: "Usuario foi cadastrado com sucesso!"
+
     })
+
+  }).catch(() => {
+
+    return res.json({
+      error: true,
+      mensagem: "Usuario não cadastrado "
+
+    })
+  })
+
 })
 
-// #put
 app.put('/users/:id', async (req, res) => {
-    const { id } = req.params
-    await User.update(req.body, { where: { id: id } }).then(() => {
-        return res.json({
-            error: false,
-            mensagem: "User Updated"
-        })
-    }).catch(() => {
-        return res.json({
-            error: true,
-            mensagem: "User doesn't Updated"
-        })
+  const { id } = req.params
+  const { name, email, password, phone, state, dwellingNumber, city, street, CEP } = req.body;
+await User.update({ name, email, password, phone, state, dwellingNumber, city, street, CEP }, { where: { id: id } }).then(() => {
+
+    return res.json({
+      error: false,
+      mensagem: "Usuario foi atualizado com sucesso!"
+
     })
+
+  }).catch(() => {
+
+    return res.json({
+      error: true,
+      mensagem: "Usuario não foi atualizado"
+
+    })
+  })
 })
 
 app.put('/users-senha/:id', async (req, res) => {
-    const { id } = req.params
-    var dados = req.body
-    dados.password = await bcrypt.hash(dados.password, 8)
-    await User.update({ password: dados.password }, { where: { id: id } }).then(() => {
-        return res.json({
-            error: false,
-            mensagem: "User Updated"
-        })
-    }).catch(() => {
-        return res.json({
-            error: true,
-            mensagem: "User doesn't Updated"
-        })
+  const { id } = req.params
+  var dados = req.body
+  dados.password = await bcrypt.hash(dados.password, 8)
+
+  await User.update({ password: dados.password }, { where: { id: id } }).then(() => {
+
+    return res.json({
+      error: false,
+      mensagem: "Usuario foi atualizado com sucesso!"
+
     })
+
+  }).catch(() => {
+
+    return res.json({
+      error: true,
+      mensagem: "Usuario não foi atualizado"
+
+    })
+  })
 })
 
-// #delete
-app.delete('/users/:id', validarToken, async (req, res) => {
-    const { id } = req.params
-    await User.destroy({ where: { id: id } }).then(() => {
-        return res.json({
-            error: false,
-            mensagem: "User Deleted"
-        })
-    }).catch(() => {
-        return res.json({
-            error: true,
-            mensagem: "User doesn't Deleted"
-        })
+app.delete('/users/:id',  async (req, res) => {
+  const { id } = req.params
+
+  await User.destroy({ where: { id: id } }).then((users) => {
+
+    return res.json({
+      error: false,
+      users,
+      mensagem: "Usuario foi deletado com sucesso!"
+
+
     })
+
+  }).catch(() => {
+
+    return res.json({
+      error: true,
+      mensagem: "Usuario não foi deletado"
+
+    })
+  })
+
+
 })
 
-// #loguin
-app.post('/user-login', async (req, res) => {
-    var InfoLogin = await User.findOne({ where: { email: req.body.email } })
-    if (!InfoLogin) {
-        return res.status(400).json({
-            error: true,
-            mensagem: "email incorreto"
-        })
+//realizar login
+
+app.post('/users-login',  async (req, res) => {
+
+  await tempo(3000)
+
+  function tempo(ms){
+    return new Promise((resposta) => {
+      setTimeout(resposta,ms)
+    })
+  }
+
+
+    const userEmail = await User.findOne({ where: { email: req.body.email } })
+    if (!userEmail) {
+      return res.status(400).json({
+        error: true,
+        mensagem: "esse usuario não foi encontrado"
+
+      })
     }
-    if (!await bcrypt.compare(req.body.password, InfoLogin.password)) {
-        return res.status(400).json({
-            error: true,
-            mensagem: "senha incorreta"
-        })
+    if (!await bcrypt.compare(req.body.password, userEmail.password)) {
+      return res.status(400).json({
+        error: true,
+        mensagem: "senha invalida"
+      })
     }
-    
-    const token = jwt.sign({ id: InfoLogin.id }, process.env.SECRET,{
-        expiresIn: '7d' // chave valida por 7 dias
+
+    const token = jwt.sign({ id: userEmail.id }, process.env.SECRET, {
+
+      expiresIn: "7d" //chave valida por 7d
     })
 
     return res.json({
-        error: false,
-        mensagem: "login efetuado",
-        token
+      error: false,
+      mensagem: "login realizado com sucesso",
+      token
     })
+
+
 })
 
 
-// #server
+
+
+//usuarios
 app.listen(8081, () => {
-    console.log("is runing")
+  console.log("servidor iniciando na porta 8081 :http://localhost:8081")
 })

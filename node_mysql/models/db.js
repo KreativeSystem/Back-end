@@ -1,18 +1,17 @@
-import Sequelize from "sequelize";
+import  Sequelize  from "sequelize";
 import 'dotenv/config'
 
-const dotenv = process.env
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
 
-
-const sequelize = new Sequelize(dotenv.NAME_db, dotenv.USER_db, dotenv.PASS_db, {
-    host:dotenv.HOST_db,
-    dialect:'mysql'
+    host: process.env.DB_HOST,
+    dialect: 'mysql' 
 })
 
-sequelize.authenticate().then(function() {
-    console.log("meu banco esta conectado")
+sequelize.authenticate().then(function(){
+    console.log('meu banco de dados está conectado ')
+
 }).catch(function() {
-    console.log("não foi possivel conectar o banco")
+    console.log("servidor não conectou")
 })
 
-export default sequelize;
+export default sequelize
