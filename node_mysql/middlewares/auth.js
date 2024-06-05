@@ -1,44 +1,36 @@
-import  jwt from "jsonwebtoken";
-import {promisify} from 'util';
-import 'dotenv/config'
+import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
+import 'dotenv/config';
 
-//iniciano middleware
+async function validarToken(req, res, next) {
+    const header = req.headers.authorization;
 
-async function validarToken(req,res,next){
+    if (!header) {
+        return res.status(401).json({
+            error: true,
+            mensagem: "Necessário realizar o login"
+        });
+    }
 
-    const header = req.headers.authorization
+    const [bearer, token] = header.split(' ');
 
-    if (!header){
-      return res.json({
-        error:true,
-        mensagem: "error:necessario realizar o login "
-      })
-     }
+    if (!token) {
+        return res.status(401).json({
+            error: true,
+            mensagem: "Necessário realizar o login"
+        });
+    }
 
-    const [bearer, token] = header.split(' ')
+    try {
+        const decod = await promisify(jwt.verify)(token, process.env.SECRET);
+        req.userId = decod.id;
+        return next();
+    } catch (error) {
+        return res.status(401).json({
+            error: true,
+            mensagem: "Erro: Token inválido"
+        });
+    }
+}
 
-    if (!token){
-      return res.json({
-        error:true,
-        mensagem: "error: necessario realizar o login "
-      })
-     }
-
-
-   
-  try{
-    const decod = await promisify(jwt.verify)(token, process.env.SECRET)
-    req.userId = decod.id
-    
-    return next()
-
-  }catch (error){
-    return res.json({
-      error:true,
-      mensagem: "error:token invalido"
-    })
-  }
-    
-  }
-
-  export default validarToken
+export default validarToken;

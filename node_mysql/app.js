@@ -40,6 +40,21 @@ app.get('/users',  async (req, res) => {
     })
 })
 
+app.get("/val-token", validarToken, async (req, res) => {
+  await usuario.findByPk(req.userId, { attributes: ['id', 'name', 'email'] })
+      .then((user) => {
+          return res.json({
+              erro: false,
+              user
+          });
+      }).catch(() => {
+          return res.status(400).json({
+              erro: true,
+              mensagem: "Erro: Necessário realizar o login para acessar a página!"
+          });
+      });
+
+});
 
 //puxando pelo id
 app.get('/users/:id',  async (req, res) => {
@@ -200,8 +215,28 @@ app.post('/users-login',  async (req, res) => {
 
 })
 
+app.get('/cart', validarToken, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    return res.json({ cart: user.cart });
+  } catch (error) {
+    console.error("Erro ao obter o carrinho:", error);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor" });
+  }
+});
 
-
+app.put('/cart', validarToken, async (req, res) => {
+  try {
+    const { cart } = req.body;
+    const user = await User.findByPk(req.userId);
+    user.cart = cart;
+    await user.save();
+    return res.json({ success: true, message: "Carrinho atualizado com sucesso." });
+  } catch (error) {
+    console.error("Erro ao atualizar o carrinho:", error);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor" });
+  }
+});
 
 //usuarios
 app.listen(8081, () => {
